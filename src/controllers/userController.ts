@@ -1,13 +1,13 @@
-const catchAsync = require('../utils/catchAsync');
-const AppError = require('../utils/appError');
-const { db } = require('../models/db');
-const APIFeatures = require('../utils/apiFeatures');
-const filterObj = require('../helpers/filterObj');
-const RESPONSE = require('../helpers/response');
-const validator = require('validator');
-const mongoose = require('mongoose');
+import catchAsync from '../utils/catchAsync';
+import AppError from '../utils/appError';
+import { db } from '../models/db';
+import APIFeatures from '../utils/apiFeatures';
+import filterObj from '../helpers/filterObj';
+import RESPONSE from '../helpers/response';
+import validator from 'validator';
+import mongoose from 'mongoose';
 
-exports.updateMe = catchAsync(async (req, res, next) => {
+export const updateMe = catchAsync(async (req, res, next) => {
   // 1) Create error if user POSTs password data
   if (req.body.password || req.body.passwordConfirm) {
     return next(
@@ -35,7 +35,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   RESPONSE.success(res, 1201, updatedUser, 200);
 });
 
-exports.getAllUsers = catchAsync(async (req, res, next) => {
+export const getAllUsers = catchAsync(async (req, res, next) => {
   const features = new APIFeatures(db.User.find(), req.query)
     .filter()
     .sort()
@@ -48,7 +48,7 @@ exports.getAllUsers = catchAsync(async (req, res, next) => {
   RESPONSE.success(res, 1000, doc, 200);
 });
 
-exports.getUserById = catchAsync(async (req, res, next) => {
+export const getUserById = catchAsync(async (req, res, next) => {
   let user;
 
   if (mongoose.isValidObjectId(req.params.id)) {
@@ -64,7 +64,7 @@ exports.getUserById = catchAsync(async (req, res, next) => {
   RESPONSE.success(res, 1000, user, 200);
 });
 
-exports.searchBy = catchAsync(async (req, res, next) => {
+export const searchBy = catchAsync(async (req, res, next) => {
   const features = new APIFeatures(db.User.find(), req.query)
     .filter()
     .sort()
@@ -78,7 +78,7 @@ exports.searchBy = catchAsync(async (req, res, next) => {
   RESPONSE.success(res, 1000, doc, 200);
 });
 
-exports.getMe = catchAsync(async (req, res, next) => {
+export const getMe = catchAsync(async (req, res, next) => {
   const user = await db.User.findById(req.user._id);
   if (!user) {
     return next(new AppError('No such user found.', 404, res));
@@ -87,3 +87,11 @@ exports.getMe = catchAsync(async (req, res, next) => {
   // Otherwise continue to send back the users details
   RESPONSE.success(res, 1200, user, 200);
 });
+
+export default {
+  updateMe,
+  getAllUsers,
+  getUserById,
+  searchBy,
+  getMe
+};

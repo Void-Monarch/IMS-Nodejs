@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose, { Model } from 'mongoose';
 
 const logSchema = new mongoose.Schema(
   {
@@ -44,7 +44,7 @@ const logSchema = new mongoose.Schema(
   },
 );
 
-logSchema.pre(/^find/, function (next) {
+logSchema.pre(/^find/, function (this: mongoose.Query<any, any>, next) {
   this.populate({
     path: 'user',
     select:
@@ -55,4 +55,4 @@ logSchema.pre(/^find/, function (next) {
 
 const Logger = mongoose.model('Log', logSchema);
 
-module.exports = Logger;
+export default Logger;

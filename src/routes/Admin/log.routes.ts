@@ -1,6 +1,6 @@
-const express = require('express');
-const authController = require('../../middleware/authController');
-const logController = require('../../controllers/admin/logController');
+import express from 'express';
+import authController from '../../middleware/authController';
+import logController from '../../controllers/admin/logController';
 
 const router = express.Router();
 
@@ -18,4 +18,4 @@ router.route('/ip/:ip').get(logController.getLogsByIp)
 
 
 
-module.exports = router;
+export default router;

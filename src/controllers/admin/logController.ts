@@ -1,13 +1,15 @@
-const validator = require('validator');
-const mongoose = require('mongoose');
-const catchAsync = require('../../utils/catchAsync');
-const AppError = require('../../utils/appError');
-const { db } = require('../../models/db');
-const APIFeatures = require('../../utils/apiFeatures');
-const filterObj = require('../../helpers/filterObj');
-const RESPONSE = require('../../helpers/response');
+import validator from 'validator';
+import mongoose, { QueryOpThatReturnsDocument } from 'mongoose';
 
-exports.getAllLogs = catchAsync(async (req, res, next) => {
+import catchAsync from '../../utils/catchAsync';
+import AppError from '../../utils/appError';
+import APIFeatures from '../../utils/apiFeatures';
+import filterObj from '../../helpers/filterObj';
+import RESPONSE from '../../helpers/response';
+import { db } from '../../models/db';
+import { NextFunction, RequestHandler, Request , Response } from 'express';
+
+export const getAllLogs : RequestHandler = catchAsync(async (req : Request, res : Response, next : NextFunction) : Promise<any> => {
   const features = new APIFeatures(db.Logger.find(), req.query)
     .filter()
     .sort()
@@ -23,7 +25,7 @@ exports.getAllLogs = catchAsync(async (req, res, next) => {
   RESPONSE.success(res, 10100, logs, 200);
 });
 
-exports.getLogsByUser = catchAsync(async (req, res, next) => {
+export const getLogsByUser : RequestHandler = catchAsync(async (req :Request, res :Response, next :NextFunction) : Promise<any> => {
   const features = new APIFeatures(
     db.Logger.find({ user: req.params.id }),
     req.query,
@@ -42,7 +44,7 @@ exports.getLogsByUser = catchAsync(async (req, res, next) => {
   RESPONSE.success(res, 10100, logs, 200);
 });
 
-exports.getLogsByIp = catchAsync(async (req, res, next) => {
+export const getLogsByIp :RequestHandler = catchAsync(async (req :Request, res:Response, next :NextFunction) : Promise<any> => {
   // IP address validation
   if (!validator.isIP(req.params.ip)) {
     return next(new AppError('Invalid IP address', 400, res));
@@ -68,3 +70,5 @@ exports.getLogsByIp = catchAsync(async (req, res, next) => {
 
   RESPONSE.success(res, 10100, logs, 200);
 });
+
+export default {getAllLogs ,getLogsByIp ,getLogsByUser}

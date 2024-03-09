@@ -1,17 +1,34 @@
-const { db } = require('../models/db');
+import { Request, Response, NextFunction, RequestHandler } from 'express';
+import mongoose from 'mongoose';
+import { db } from '../models/db';
 
-exports.logger = async (req, res, next) => {
+// Interface for log object
+interface LogObject {
+  method: string;
+  route: string;
+  params: string;
+  query: string;
+  ip: string;
+  clientAgent: string;
+  responseTime?: string;
+  status?: number;
+  user?: mongoose.Types.ObjectId | undefined;
+  message?: string;
+  contentLength?: Number;
+}
+
+export default async (req : Request, res : Response, next: NextFunction) : Promise<void> => {
   if (req.url.startsWith('/api')) {
     /* Response Time calc */
     const start = Date.now();
     /* Response Time calc */
-    const logObject = {
+    const logObject : LogObject = {
       method: req.method,
       route: req.url,
       params: JSON.stringify(req.params),
       query: JSON.stringify(req.query),
-      ip: req.ip,
-      clientAgent: req.headers['user-agent'],
+      ip: req.ip as string,
+      clientAgent: req.headers['user-agent'] as string,
     };
     // Bind to response Finish event
     res.on('finish', async () => {
@@ -23,8 +40,9 @@ exports.logger = async (req, res, next) => {
       } catch (e) {
         // Do nothing
       }
+
       logObject.message = res.locals.message || 'not found... ';
-      logObject.contentLength = res.getHeaders()['content-length'];
+      logObject.contentLength = res.getHeaders()['content-length'] as Number;
 
       // Saving to DB
       await db.Logger.create(logObject);

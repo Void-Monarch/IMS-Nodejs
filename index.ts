@@ -1,6 +1,5 @@
-import mongoose from 'mongoose';
-import config from './dist/config/config';
-import app from './dist/app';
+import mongoose, { ErrorHandlingMiddlewareFunction } from 'mongoose';
+import config from './src/config/config';
 
 
 process.on('uncaughtException', (err) => {
@@ -9,9 +8,11 @@ process.on('uncaughtException', (err) => {
   process.exit(1);
 });
 
+import app from './src/app';
 
 // DATABASE CONFIG AND CONNECTION
-let DB;
+let DB : string = "";
+
 if (config.database.DB_TYPE === 'LOCAL') {
   DB = config.database.DATABASE_LOCAL;
 } else if (config.database.DB_TYPE === 'LIVE') {
@@ -38,7 +39,7 @@ const server = app.listen(port, () => {
   );
 });
 
-process.on('unhandledRejection', (err) => {
+process.on('unhandledRejection', (err : Error) => {
   console.log('UNHANDLED REJECTION! 💥 Shutting down...');
   console.log(err.name, err.message);
   server.close(() => {

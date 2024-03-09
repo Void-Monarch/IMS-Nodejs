@@ -1,7 +1,7 @@
-const crypto = require('crypto');
-const mongoose = require('mongoose');
-const validator = require('validator');
-const bcrypt = require('bcryptjs');
+import crypto from 'crypto';
+import mongoose from 'mongoose';
+import validator from 'validator';
+import bcrypt from 'bcryptjs';
 
 const userSchema = new mongoose.Schema(
   {
@@ -52,7 +52,7 @@ const userSchema = new mongoose.Schema(
       required: [true, 'Please confirm your password'],
       validate: {
         // This only works on CREATE and SAVE!!!
-        validator: function (el) {
+        validator: function (this: any, el: string) {
           return el === this.password;
         },
         message: 'Passwords are not the same!',
@@ -83,7 +83,7 @@ userSchema.pre('save', async function (next) {
   this.password = await bcrypt.hash(this.password, 12);
 
   // Delete passwordConfirm field
-  this.passwordConfirm = undefined;
+  this.passwordConfirm = undefined!;
   next();
 });
 
@@ -101,13 +101,13 @@ userSchema.pre(/^find/, function (next) {
 });
 
 userSchema.methods.correctPassword = async function (
-  candidatePassword,
-  userPassword,
+  candidatePassword : string,
+  userPassword : string,
 ) {
   return await bcrypt.compare(candidatePassword, userPassword);
 };
 
-userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
+userSchema.methods.changedPasswordAfter = function (JWTTimestamp : any) {
   if (this.passwordChangedAt) {
     const changedTimestamp = parseInt(
       this.passwordChangedAt.getTime() / 1000,
@@ -138,4 +138,4 @@ userSchema.methods.createPasswordResetToken = function () {
 
 const User = mongoose.model('User', userSchema);
 
-module.exports = User;
+export default User;

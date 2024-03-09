@@ -1,11 +1,20 @@
-class APIFeatures {
-  constructor(query, queryString) {
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
+
+import { QuerySelector } from "mongoose";
+import { Query } from "mongoose";
+
+export default class APIFeatures {
+  query;
+  queryString;
+
+  constructor(query: Query<any, any, any, any, any>, queryString: QuerySelector<any>) {
     this.query = query;
     this.queryString = queryString;
   }
 
   filter() {
-    const queryObj = { ...this.queryString };
+    const queryObj: { [key: string]: any } = { ...this.queryString };
     const excludedFields = ['page', 'sort', 'limit', 'fields', 'search'];
     excludedFields.forEach((el) => delete queryObj[el]);
 
@@ -66,4 +75,3 @@ class APIFeatures {
   }
 }
 
-module.exports = APIFeatures;

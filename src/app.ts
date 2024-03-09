@@ -1,17 +1,17 @@
-const express = require('express');
-const cors = require('cors'); // CORS read more on it
-const morgan = require('morgan');
-const helmet = require('helmet');
-const mongoSanitize = require('express-mongo-sanitize');
-const xss = require('xss-clean');
-const cookieParser = require('cookie-parser');
-const path = require('path');
-const { logger } = require('./middleware/logger');
+import express, { Application } from 'express';
+import cors from 'cors'; // CORS read more on it
+import morgan from 'morgan';
+import helmet from 'helmet';
+import mongoSanitize from 'express-mongo-sanitize';
+import xss from 'xss-clean';
+import cookieParser from 'cookie-parser';
+import path from 'path';
+import logger from './middleware/logger';
 // All Routes ----------------
-const { allRoute } = require('./routes/allRoutes.routes');
+import { allRoute } from './routes/allRoutes.routes';
 
 // const AppError = require('./utils/appError');
-const globalErrorHandler = require('./middleware/errorController');
+import globalErrorHandler from './middleware/errorController';
 
 const app = express();
 
@@ -54,19 +54,10 @@ app.use(
 
 app.use(express.static(`public`));
 
-// Test middleware
-app.use((req, res, next) => {
-  req.requestTime = new Date().toISOString();
-  next();
-});
-
 // 3) ROUTES
 
 // 3.1 API Routes
 app.use('/api/v1/user', allRoute.userRoute);
-app.use('/api/v1/restaurant', allRoute.restoRoute);
-app.use('/api/v1/menu', allRoute.menuRoute);
-app.use('/api/v1/order', allRoute.orderRoute);
 
 // 3.2 Admin Routes
 app.use('/api/v1/admin/log', allRoute.admin.log);
@@ -74,4 +65,4 @@ app.use('/api/v1/admin/log', allRoute.admin.log);
 // app.use(globalErrorHandler);
 app.use(globalErrorHandler);
 
-module.exports = app;
+export default app;

@@ -1,3 +1,6 @@
+import { error } from "console";
+import { Response } from "express";
+
 const MESSAGES = {
   // User Management
   1000: 'User found successfully',
@@ -49,26 +52,36 @@ const MESSAGES = {
 };
 
 // Function to get message from message code
-const getMessage = (messageCode) => {
+const getMessage = (messageCode : number) => {
   if (isNaN(messageCode)) {
     return messageCode;
   }
-  return messageCode ? MESSAGES[messageCode] : '';
+  return messageCode ? MESSAGES[messageCode as keyof typeof MESSAGES] : '';
 };
 
-exports.success = function (
-  res,
-  messageCode = null,
-  data = null,
-  statusCode = 200,
-) {
-  const response = {};
+const success = function (
+  res : Response,
+  messageCode : number | null = null,
+  data : Array<any> | null | Object = null,
+  statusCode : number = 200,
+) : Response<any, Record<string, any>> {
+  const response : {
+    
+    success ?: string;
+    message ?: string | number;
+    length ?: number;
+    data ?: Array<any> | Object | null;
+
+  } = {};
   response.success = 'success';
-  response.message = getMessage(messageCode);
+  response.message = getMessage(messageCode!);
   if (data != null) {
+    // @ts-ignore 
     response.length = data.length;
-    response.data = data;
+    response.data = data!;
   }
   res.locals.message = response.message;
   return res.status(statusCode).json(response);
 };
+
+export default { success }
